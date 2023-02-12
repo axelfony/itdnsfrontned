@@ -68,6 +68,11 @@ async function onSubmit(values) {
                     <Field name="lastName" type="text" class="form-control" :class="{ 'is-invalid': errors.lastName }" />
                     <div class="invalid-feedback">{{ errors.lastName }}</div>
                 </div>
+                <div class="form-group col">
+                    <label>Email</label>
+                    <Field name="email" type="text" class="form-control" :class="{ 'is-invalid': errors.lastName }" />
+                    <div class="invalid-feedback">{{ errors.email }}</div>
+                </div>
             </div>
             <div class="form-row">
                 <div class="form-group col">
