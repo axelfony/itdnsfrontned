@@ -1,8 +1,17 @@
-<template>
+<!-- Bootstrap -->
+<!-- <template>
     <div class="p-4">
         <div class="container">
             <router-view />
         </div>
     </div>
-</template>
-
+</template> -->
+<!-- Tailwind -->
+<template>
+    <div class="p-4">
+      <div class="container mx-auto">
+        <router-view />
+      </div>
+    </div>
+  </template>
+  
