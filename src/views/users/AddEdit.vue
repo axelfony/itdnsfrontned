@@ -155,7 +155,7 @@ async function onSubmit(values) {
             v-show="isSubmitting"
             class="spinner-border spinner-border-sm mr-1"
           ></span>
-          Save
+          {{ user ? "Update" : "Create" }}
         </button>
         <router-link
           to="/users"
