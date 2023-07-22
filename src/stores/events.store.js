@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-
 import { fetchWrapper } from '@/helpers';
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/events`;
@@ -7,7 +6,7 @@ const baseUrl = `${import.meta.env.VITE_API_URL}/events`;
 export const useEventsStore = defineStore({
     id: 'events',
     state: () => ({
-        events: {},
+        events: [], // Change the initial value to an empty array
         event: {}
     }),
     actions: {
@@ -19,17 +18,13 @@ export const useEventsStore = defineStore({
                 this.events = { error };
             }
         },
-        async getOne(id) {
-            this.event = {};
+        async getById(id) {
+            this.event = { loading: true };
             try {
-                const response = await fetchWrapper.get(`${baseUrl}/${id}`);
-                if (response.success) {
-                    this.event = response.data;
-                } else {
-                    throw response.message;
-                }
+                this.event = await fetchWrapper.get(`${baseUrl}/${id}`);
             } catch (error) {
-                console.error(`Error retrieving event with id ${id}: ${error}`);
+                console.error(`Error getting event ${id}: ${error}`);
+                this.event = { error };
             }
         },
         async create(event) {

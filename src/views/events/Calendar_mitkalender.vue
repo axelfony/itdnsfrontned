@@ -7,7 +7,6 @@
     <FullCalendar
       v-if="calendarOptions"
       :options="calendarOptions"
-      :events="calendarEvents"
       @dateClick="handleDateClick"
     />
     <!-- Add event popup -->
@@ -19,18 +18,23 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useEventsStore } from '@/stores';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
 const eventsStore = useEventsStore();
-const { events } = eventsStore;
+const { events } = storeToRefs(eventsStore);
 
 // Popup state and event handling
 const showAddEventPopup = ref(false);
+
+// Fetch events from the store
+eventsStore.getAll();
 
 // Function to format the date in a user-friendly way
 function formatDate(dateString) {
@@ -51,7 +55,6 @@ function handleDateClick(info) {
 function closePopup() {
   showAddEventPopup.value = false;
 }
-
 // Map events to FullCalendar's event format
 const calendarEvents = ref([]);
 
@@ -63,19 +66,5 @@ const calendarOptions = ref({
   plugins: calendarPlugins,
   initialView: 'dayGridMonth',
   selectable: true, // Enable date selection
-});
-
-// Fetch events from the store and map them to calendarEvents
-onMounted(async () => {
-  await eventsStore.getAll();
-
-  // Check if events.value is an array before mapping
-  if (Array.isArray(events.value)) {
-    calendarEvents.value = events.value.map((event) => ({
-      title: event.event_name,
-      start: event.start_date,
-      end: event.end_date,
-    }));
-  }
 });
 </script>

@@ -41,18 +41,18 @@
                 >Systems</router-link
               >
               <router-link
-                to="/calendar"
-                class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out"
-                :class="{
-                  'bg-gray-900 text-white': $route.path === '/calendar',
-                }"
-                >Calendar</router-link
-              >
-              <router-link
                 to="/events"
                 class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out"
                 :class="{ 'bg-gray-900 text-white': $route.path === '/events' }"
                 >Events</router-link
+              >
+              <router-link
+                to="/events/calendar"
+                class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out"
+                :class="{
+                  'bg-gray-900 text-white': $route.path === '/events/calendar',
+                }"
+                >Calendar</router-link
               >
             </div>
           </div>

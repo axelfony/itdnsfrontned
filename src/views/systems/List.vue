@@ -10,13 +10,15 @@ systemsStore.getAll();
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Systems</h1>
-    <router-link
-      to="/systems/add"
-      class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md mb-4"
-    >
-      Add System
-    </router-link>
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Systems</h1>
+      <router-link
+        to="/systems/add"
+        class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md"
+      >
+        Add System
+      </router-link>
+    </div>
     <div class="shadow overflow-hidden border-b border-gray-200 rounded-md">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -31,7 +33,7 @@ systemsStore.getAll();
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              System ID
+              System SID
             </th>
             <th
               scope="col"
