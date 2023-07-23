@@ -9,20 +9,29 @@ export const useUsersStore = defineStore({
     id: 'users',
     state: () => ({
         users: {},
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: 0,
         user: {}
     }),
     actions: {
+        goToPage(page) {
+            this.currentPage = page;
+            this.getAll();
+        },
         async register(user) {
             await fetchWrapper.post(`${baseUrl}/register`, user);
         },
+        //needs to be update to propagate pagination results - users is object and not an array
         async getAll() {
             this.users = { loading: true };
             try {
-                this.users = await fetchWrapper.get(baseUrl);    
+                this.users = await fetchWrapper.get(baseUrl);
             } catch (error) {
                 this.users = { error };
             }
         },
+
         async getById(id) {
             this.user = { loading: true };
             try {

@@ -1,19 +1,23 @@
-
 <script>
-import { defineComponent, toRefs, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { Dialog } from '@headlessui/vue'; // Import Dialog only here
 import { useEventsStore } from '@/stores';
 
 export default defineComponent({
   components: {
     FullCalendar,
+    Dialog, // Declare Dialog component here
+    // Transition component will be used directly from Dialog component in the template section
   },
   setup() {
     const eventsStore = useEventsStore();
     const events = ref([]);
+    const showModal = ref(false);
+    const selectedEvent = ref({});
 
     // Fetch events from the store
     onMounted(async () => {
@@ -51,39 +55,33 @@ export default defineComponent({
 
     const currentEvents = ref([]);
 
-    async function handleDateSelect(selectInfo) {
-      let title = prompt('Please enter a new title for your event');
+    function handleDateSelect(selectInfo) {
       let calendarApi = selectInfo.view.calendar;
-
       calendarApi.unselect(); // clear date selection
-
-      if (title) {
-        try {
-          const eventParam = {
-            event_name: title,
-            start_date: selectInfo.startStr,
-            end_date: selectInfo.endStr,
-          };
-          await eventsStore.create(eventParam); // Add the event to the backend
-          await eventsStore.getAll(); // Fetch events from the backend again
-          events.value = eventsStore.events; // Update the local events with the new list
-        } catch (error) {
-          console.error('Error creating event:', error);
-        }
-      }
+      selectedEvent.value = {
+        start: selectInfo.startStr,
+        end: selectInfo.endStr,
+        title: '',
+        system: null,
+        user: null,
+        description: null,
+      };
+      showModal.value = true;
     }
 
     async function handleEventClick(clickInfo) {
-      if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-        try {
-          await eventsStore.delete(clickInfo.event.id); // Delete the event from the backend
-          await eventsStore.getAll(); // Fetch events from the backend again
-          events.value = eventsStore.events; // Update the local events with the new list
-        } catch (error) {
-          console.error('Error deleting event:', error);
-        }
-      }
+      selectedEvent.value = {
+        id: clickInfo.event.id,
+        title: clickInfo.event.title,
+        description: clickInfo.event.extendedProps.description,
+        start: clickInfo.event.startStr,
+        end: clickInfo.event.endStr,
+        system: clickInfo.event.extendedProps.system,
+        user: clickInfo.event.extendedProps.user,
+      };
+      showModal.value = true;
     }
+
 
     function handleEvents(events) {
       currentEvents.value = events;
@@ -95,15 +93,31 @@ export default defineComponent({
       calendarApi.setOption('weekends', calendarOptions.weekends); // Update the weekends option in the FullCalendar
     }
 
+
+    async function handleAddEvent() {
+      if (selectedEvent.value.title) {
+        try {
+          await eventsStore.create(selectedEvent.value); // Add the event to the backend
+          await eventsStore.getAll(); // Fetch events from the backend again
+          events.value = eventsStore.events; // Update the local events with the new list
+          showModal.value = false;
+        } catch (error) {
+          console.error('Error creating event:', error);
+        }
+      }
+    }
+
     return {
       calendarOptions,
       currentEvents,
       handleDateSelect,
       handleEventClick,
       handleWeekendsToggle, // Add the handleWeekendsToggle method to the return object
+      handleAddEvent,
+      showModal,
+      selectedEvent,
     };
   },
-
 });
 </script>
 <template>
@@ -145,5 +159,44 @@ export default defineComponent({
         </template>
       </FullCalendar>
     </div>
+    <Dialog :open="showModal" @close="showModal = false" class="fixed z-10 inset-0 overflow-y-auto" as="div">
+  <div class="fixed inset-0 bg-black opacity-30" />
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="transition-all ease-out duration-300 transform opacity-0 scale-75 enter:opacity-100 enter:scale-100 leave:opacity-0 leave:scale-75">
+      <div class="p-6 bg-white rounded-lg">
+        <h2 class="text-xl font-bold mb-6">{{ selectedEvent.title ? 'Edit Event' : 'Add Event' }}</h2>
+        <div>
+          <label class="block">Event Title</label>
+          <input v-model="selectedEvent.title" type="text" placeholder="Enter event title" />
+        </div>
+        <div>
+          <label class="block">Event Description</label>
+          <input v-model="selectedEvent.description" type="text" placeholder="Enter event description" />
+        </div>
+        <div>
+          <label class="block">System</label>
+          <select v-model="selectedEvent.system">
+            <option v-for="system in systems" :key="system.id" :value="system.id">
+              {{ system.system_name }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label class="block">User</label>
+          <select v-model="selectedEvent.user">
+            <option v-for="user in users" :key="user.id" :value="user.id">
+              {{ user.username }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <button @click="handleAddEvent">Save Event</button>
+          <button @click="showModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Dialog>
+
   </div>
 </template>
