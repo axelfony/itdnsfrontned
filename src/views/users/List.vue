@@ -1,12 +1,26 @@
 <script setup>
+import { watch, onMounted, computed } from 'vue';
 import { storeToRefs } from "pinia";
 import { useUsersStore } from "@/stores";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid'
 
+const isFirstPage = computed(() => currentPage.value === 1);
+const isLastPage = computed(() => currentPage.value === Math.ceil(totalItems.value / itemsPerPage.value));
+
 const usersStore = useUsersStore();
 const { users, currentPage, itemsPerPage, totalItems, nextPage, previousPage, goToPage } = storeToRefs(usersStore);
 
-usersStore.getAll();
+// Fetch data when component mounts
+onMounted(() => {
+  usersStore.getAll(currentPage.value, itemsPerPage.value);
+});
+
+// Watch for changes in currentPage and fetch data for the new page
+watch(currentPage, (newPage, oldPage) => {
+  if (newPage !== oldPage) {
+    usersStore.getAll(newPage, itemsPerPage.value);
+  }
+});
 </script>
 
 <template>
@@ -105,22 +119,20 @@ usersStore.getAll();
           <div>
             <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
               <!-- Previous Button -->
-              <a @click="previousPage"
+              <a @click="previousPage" :class="{ 'opacity-50 pointer-events-none': isFirstPage.value }"
                 class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                 <span class="sr-only">Previous</span>
                 <ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
               </a>
-
               <!-- Page Buttons -->
               <template v-for="page in Math.ceil(totalItems / itemsPerPage)">
-                <a @click="goToPage(page)"
+                <a @click="usersStore.goToPage(page)"
                   :class="{ 'bg-indigo-600 text-white': currentPage === page, 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== page }"
                   class="relative inline-flex items-center px-4 py-2 text-sm font-medium focus:outline-offset-0">{{ page
                   }}</a>
               </template>
-
               <!-- Next Button -->
-              <a @click="nextPage"
+              <a @click="nextPage" :class="{ 'opacity-50 pointer-events-none': isLastPage.value }"
                 class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                 <span class="sr-only">Next</span>
                 <ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
@@ -129,6 +141,8 @@ usersStore.getAll();
           </div>
         </div>
       </div>
+
     </div>
 
-</div></template>
+  </div>
+</template>

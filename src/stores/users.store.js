@@ -5,10 +5,11 @@ import { useAuthStore } from '@/stores';
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`;
 
+//users now are stored in array
 export const useUsersStore = defineStore({
     id: 'users',
     state: () => ({
-        users: {},
+        users: [],
         currentPage: 1,
         itemsPerPage: 10,
         totalItems: 0,
@@ -17,27 +18,40 @@ export const useUsersStore = defineStore({
     actions: {
         goToPage(page) {
             this.currentPage = page;
-            this.getAll();
-        },
+            this.getAll(this.currentPage, this.itemsPerPage);
+          },
         async register(user) {
             await fetchWrapper.post(`${baseUrl}/register`, user);
         },
-        //needs to be update to propagate pagination results - users is object and not an array
+        nextPage() {
+            if (this.currentPage * this.itemsPerPage < this.totalItems) {
+              this.currentPage++;
+              this.getAll(this.currentPage, this.itemsPerPage);
+            }
+          },
+          previousPage() {
+            if (this.currentPage > 1) {
+              this.currentPage--;
+              this.getAll(this.currentPage, this.itemsPerPage);
+            }
+          },
         async getAll() {
             this.users = { loading: true };
             try {
-                this.users = await fetchWrapper.get(baseUrl);
+                const response = await fetchWrapper.get(`${baseUrl}?page=${this.currentPage}&limit=${this.itemsPerPage}`);
+                this.users = response.users;
+                this.totalItems = response.totalItems;
             } catch (error) {
                 this.users = { error };
             }
         },
-
         async getById(id) {
-            this.user = { loading: true };
+            this.users = { loading: true };
             try {
-                this.user = await fetchWrapper.get(`${baseUrl}/${id}`);
+                this.users = await fetchWrapper.get(`${baseUrl}/${id}`);
             } catch (error) {
-                this.user = { error };
+                console.error(`Error getting users ${id}: ${error}`);
+                this.users = { error };
             }
         },
         async update(id, params) {

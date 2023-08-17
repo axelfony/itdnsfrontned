@@ -1,6 +1,6 @@
 {
     "name": "vue-3-pinia-registration-login-example",
-    "version": "0.0.0",
+    "version": "0.0.9",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
