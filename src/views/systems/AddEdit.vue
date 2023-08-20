@@ -21,7 +21,6 @@ if (id) {
   systemsStore.getById(id);
 }
 
-
 const schema = Yup.object().shape({
   system_name: Yup.string().required("System Name is required"),
   system_id: Yup.string().required("System ID is required"),
@@ -77,7 +76,7 @@ async function onSubmit(values) {
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             for="system_description"
           >
-          System Description
+            System Description
           </label>
           <Field
             name="system_description"
@@ -86,7 +85,9 @@ async function onSubmit(values) {
             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             :class="{ 'border-red-500': errors.system_description }"
           />
-          <p class="text-red-500 text-xs italic">{{ errors.system_description }}</p>
+          <p class="text-red-500 text-xs italic">
+            {{ errors.system_description }}
+          </p>
         </div>
       </div>
       <div class="flex flex-wrap -mx-3">
@@ -95,7 +96,7 @@ async function onSubmit(values) {
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             for="system_id"
           >
-          System SID
+            System SID
           </label>
           <Field
             name="system_id"
@@ -111,7 +112,7 @@ async function onSubmit(values) {
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             for="contact_name"
           >
-          Contact Name
+            Contact Name
           </label>
           <Field
             name="contact_name"
