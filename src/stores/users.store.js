@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { fetchWrapper } from '@/helpers';
 import { useAuthStore } from '@/stores';
+import { useAlertStore } from '@/stores';
+
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`;
 
@@ -19,8 +21,20 @@ export const useUsersStore = defineStore({
             this.currentPage = page;
             this.getAll(this.currentPage, this.itemsPerPage);
           },
-        async register(user) {
-            await fetchWrapper.post(`${baseUrl}/register`, user);
+          async register(user) {
+            try {
+                await fetchWrapper.post(`${baseUrl}/register`, user);
+        
+                // Set the alert to success after successful registration
+                const alertStore = useAlertStore();
+                alertStore.success('User registered successfully!');
+            } catch (error) {
+                console.error(`Error registering user: ${error}`);
+                
+                // Set an error alert
+                const alertStore = useAlertStore();
+                alertStore.error('Error registering user. Please try again.');
+            }
         },
         nextPage() {
             if (this.currentPage * this.itemsPerPage < this.totalItems) {
@@ -34,16 +48,22 @@ export const useUsersStore = defineStore({
               this.getAll(this.currentPage, this.itemsPerPage);
             }
           },
-        async getAll() {
+          async getAll() {
             this.users = { loading: true };
             try {
                 const response = await fetchWrapper.get(`${baseUrl}?page=${this.currentPage}&limit=${this.itemsPerPage}`);
                 this.users = response.users;
                 this.totalItems = response.totalItems;
             } catch (error) {
+                console.error(`Error getting users: ${error}`);
+                
+                // Set an error alert
+                const alertStore = useAlertStore();
+                alertStore.error('Error fetching users. Please try again.');
                 this.users = { error };
             }
         },
+        
         async getById(id) {
             this.users = { loading: true };
             try {
