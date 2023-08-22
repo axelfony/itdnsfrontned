@@ -108,6 +108,8 @@
 <script setup>
 import { Form, Field } from "vee-validate";
 import * as Yup from "yup";
+import YupPassword from 'yup-password'
+YupPassword(Yup) // extend yup
 
 import { useUsersStore, useAlertStore } from "@/stores";
 import { router } from "@/router";
@@ -118,8 +120,12 @@ const schema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
   email: Yup.string().email("A valid email is required"),
   password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .required("Password is required") 
+    .min(6, "Password must be at least 6 characters")    
+    .minLowercase(1, 'Password must contain at least 1 lower case letter')
+    .minUppercase(1, 'Password must contain at least 1 upper case letter')
+    .minNumbers(1, 'Password must contain at least 1 number')
+    .minSymbols(1, 'Password must contain at least 1 special character'),
 });
 
 async function onSubmit(values) {

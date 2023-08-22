@@ -70,15 +70,16 @@ async function onSubmit(values) {
     let message;
     if (event) {
       await eventsStore.update(event.value.id, values);
-      message = "event updated";
+      message = "Event updated";
     } else {
       await eventsStore.create(values);
-      message = "event added";
+      message = "Event added";
     }
     await router.push("/events");
     alertStore.success(message);
   } catch (error) {
-    alertStore.error(error);
+    console.error("Error in onSubmit:", error); // Logging the error
+    alertStore.error(error.message || "An error occurred.");
   }
 }
 </script>

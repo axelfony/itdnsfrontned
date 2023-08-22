@@ -3,7 +3,7 @@
   <div class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-md">
       <div>
-        <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+        <img class="mx-auto h-12 w-auto" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2015%2F05%2F22%2F19%2F01%2Fbusiness-779542_640.jpg&f=1&nofb=1&ipt=0a82306ec737edd73463956b79cd25f4d7021e5bc6ac379ce31fed46772812bc&ipo=images"
           alt="WKIT" />
         <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
         <p class="mt-2 text-center text-sm text-gray-600">
